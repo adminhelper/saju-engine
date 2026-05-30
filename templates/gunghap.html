@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<!--
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║  궁합(宮合) 상담 보고서 — 커플용 템플릿 (丹靑 design)                     ║
+  ║  saju-engine plugin · templates/gunghap.html                           ║
+  ║                                                                        ║
+  ║  ▸ 사용법: {{ }} 로 표시된 모든 자리를 compute_gunghap 결과 + 역술가     ║
+  ║    통변으로 채운다. <style> 블록은 그대로 두는 것을 권장(디자인 일관성).   ║
+  ║  ▸ 10단계 섹션 순서·번호는 고정. 각 섹션은 예시 마크업을 복제·확장.       ║
+  ║  ▸ 두 사람 표기: 남자=class "he"/.person.male, 여자=class "she"/.female  ║
+  ║  ▸ 매핑되는 compute_gunghap 필드:                                       ║
+  ║      · sajuA.원국 / sajuB.원국  → .couple/.person/.p-pillars            ║
+  ║      · 일간관계   → §2 (상생/상극/비화, 예 金生水 금백수청)               ║
+  ║      · 오행상호보완 → §3 (.oh-compare 표)                               ║
+  ║      · 십성교차   → §3·§4 보조 해석                                     ║
+  ║      · 일지관계   → §5 (일지 합충형해·부부궁)                            ║
+  ║      · 종합점수.score → §10 (.scorebox/.score-bar + ★/100)             ║
+  ║  ▸ 전문용어는 <span class="term">용어</span> 로 감싸고 "쉽게 말하면…"    ║
+  ║    으로 실생활 번역을 반드시 덧붙인다.                                   ║
+  ║  ▸ 신뢰/길흉 칩: <span class="conf-good">✓</span> / ★ / ▲주의 인라인 표기  ║
+  ╚══════════════════════════════════════════════════════════════════════╝
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{이름A}} ♥ {{이름B}} — 궁합(宮合) 상담 보고서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@400;500;700;900&family=Nanum+Myeongjo:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1a1410; --ink-soft:#3a2f28; --paper:#f7f1e3; --paper-deep:#efe7d2; --paper-card:#fdfaf0; --accent:#8b1a1a; --accent-deep:#5e0f0f; --accent2:#1f3d2b; --accent3:#1a3a5c; --gold:#a87a2a; --gold-soft:#d4ab5a; --muted:#6b5d4e; --line:#c9bfa3; --line-soft:#e1d8bc; --hi:#fff5cc; --he:#7a1f6e; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin:0; color:var(--ink); font-family:"Gowun Batang","Noto Serif KR","Nanum Myeongjo","Apple SD Gothic Neo",serif; line-height:1.95; font-size:16.5px; letter-spacing:0.005em; background:radial-gradient(ellipse at top,#fbf6e7 0%,#f3ecd6 60%,#e9dfc0 100%) fixed,var(--paper); background-attachment:fixed; }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; background-image: radial-gradient(circle at 20% 20%,rgba(168,122,42,0.04) 0,transparent 40%), radial-gradient(circle at 80% 80%,rgba(139,26,26,0.04) 0,transparent 40%), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); opacity:0.7; }
+  .wrap { position:relative; z-index:1; max-width:960px; margin:0 auto; padding:80px 36px 140px; }
+  header.cover { text-align:center; padding:48px 24px 40px; margin-bottom:50px; position:relative; background:linear-gradient(180deg,rgba(253,250,240,0.9) 0%,rgba(247,241,227,0.6) 100%); border:1px solid var(--line); box-shadow:0 30px 60px -30px rgba(60,40,20,0.18),inset 0 0 0 1px rgba(255,255,255,0.4); border-radius:2px; }
+  header.cover::before,header.cover::after { content:""; position:absolute; left:50%; transform:translateX(-50%); width:80px; height:1px; background:var(--accent); }
+  header.cover::before { top:18px; } header.cover::after { bottom:18px; }
+  header.cover .label { font-family:"Cormorant Garamond","Noto Serif KR",serif; font-style:italic; font-size:13px; letter-spacing:0.5em; color:var(--accent); margin-bottom:18px; text-transform:uppercase; }
+  .ornament { text-align:center; color:var(--gold); letter-spacing:0.6em; margin:18px 0 6px; font-size:18px; }
+  header.cover h1 { font-family:"Nanum Myeongjo","Noto Serif KR",serif; font-size:40px; margin:0 0 14px; letter-spacing:0.1em; color:var(--ink); font-weight:800; }
+  header.cover h1 .heart { color:var(--accent); font-size:30px; vertical-align:middle; margin:0 12px; }
+  header.cover h1 .he-name { color:var(--accent3); } header.cover h1 .she-name { color:var(--accent); }
+  header.cover .subtitle { color:var(--ink-soft); font-size:14px; letter-spacing:0.05em; margin-top:8px; }
+  header.cover .stamp { display:inline-block; margin-top:22px; padding:8px 18px; border:1.5px solid var(--accent); color:var(--accent); font-size:11px; letter-spacing:0.4em; background:rgba(255,255,255,0.4); font-family:"Cormorant Garamond",serif; }
+  .disclaimer { background:var(--paper-card); border:1px solid var(--line); border-left:4px solid var(--gold); padding:22px 26px; margin:24px 0 50px; font-size:14.2px; color:var(--ink-soft); border-radius:2px; box-shadow:0 10px 30px -20px rgba(60,40,20,0.2); }
+  .disclaimer strong { color:var(--accent); letter-spacing:0.05em; }
+  h2.section { font-family:"Nanum Myeongjo","Noto Serif KR",serif; font-size:27px; font-weight:800; margin:72px 0 26px; padding:22px 26px; background:linear-gradient(90deg,rgba(139,26,26,0.08) 0%,rgba(139,26,26,0.02) 50%,transparent 100%); border-left:5px solid var(--accent); border-bottom:1px solid var(--line-soft); letter-spacing:0.04em; color:var(--ink); position:relative; }
+  h2.section::after { content:""; position:absolute; left:26px; bottom:-6px; width:36px; height:2px; background:var(--gold); }
+  h2.section .num { color:var(--accent); font-weight:900; margin-right:14px; font-family:"Cormorant Garamond",serif; font-size:30px; font-style:italic; }
+  h3 { font-family:"Noto Serif KR",serif; margin-top:36px; font-size:19px; color:var(--accent2); border-bottom:1px solid var(--line-soft); padding-bottom:8px; letter-spacing:0.02em; font-weight:700; }
+  h4 { margin:24px 0 10px; font-size:16.5px; color:var(--accent); letter-spacing:0.03em; }
+  p { margin:14px 0; text-align:justify; word-break:keep-all; }
+  b,strong { color:var(--ink); font-weight:700; }
+  .term { background:linear-gradient(180deg,transparent 55%,var(--hi) 55%); padding:0 2px; font-weight:600; color:var(--accent-deep); }
+  .he { color:var(--accent3); font-weight:700; } .she { color:var(--accent); font-weight:700; }
+  /* couple compare table */
+  .couple { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:28px 0 32px; }
+  .person { background:var(--paper-card); border:1px solid var(--line); border-radius:6px; padding:20px; box-shadow:0 18px 36px -26px rgba(60,40,20,0.3); }
+  .person.male { border-top:5px solid var(--accent3); }
+  .person.female { border-top:5px solid var(--accent); }
+  .person h3 { margin-top:0; border:none; padding:0; font-size:18px; }
+  .person.male h3 { color:var(--accent3); } .person.female h3 { color:var(--accent); }
+  .person .meta { font-size:13px; color:var(--muted); margin-bottom:12px; letter-spacing:0.03em; }
+  .p-pillars { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:12px 0; }
+  .p-pillars > div { text-align:center; background:#fff; border:1px solid var(--line-soft); border-radius:4px; padding:8px 2px; }
+  .p-pillars .gan { font-family:"Nanum Myeongjo",serif; font-size:22px; font-weight:800; color:var(--accent); line-height:1.1; }
+  .p-pillars .ji { font-family:"Nanum Myeongjo",serif; font-size:22px; font-weight:800; color:var(--accent2); line-height:1.1; }
+  .p-pillars .lbl { font-size:9.5px; color:var(--muted); margin-top:3px; letter-spacing:0.05em; }
+  .person ul { padding-left:20px; margin:10px 0 0; } .person li { font-size:14px; margin:5px 0; }
+  /* ohaeng compare */
+  .oh-compare { width:100%; border-collapse:separate; border-spacing:0; margin:18px 0 28px; font-size:14px; background:var(--paper-card); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .oh-compare th,.oh-compare td { padding:10px; text-align:center; border-bottom:1px solid var(--line-soft); border-right:1px solid var(--line-soft); }
+  .oh-compare th:last-child,.oh-compare td:last-child { border-right:none; }
+  .oh-compare tr:last-child td { border-bottom:none; }
+  .oh-compare th { background:linear-gradient(180deg,#2a201a,#1a1410); color:#f3e9c8; letter-spacing:0.08em; }
+  .oh-compare .rowh { background:var(--paper-deep); font-weight:700; color:var(--accent2); }
+  .oh-compare .lack { color:#b53c1f; font-weight:700; } .oh-compare .full { color:#2d6a2b; font-weight:700; }
+  .oh-compare .fill { background:rgba(45,106,43,0.12); }
+  .key { background:linear-gradient(135deg,#fff9e2 0%,#f6ecc5 100%); border:1px solid var(--gold); border-left:4px solid var(--gold); padding:18px 22px; margin:20px 0; border-radius:4px; box-shadow:0 12px 30px -22px rgba(168,122,42,0.5); }
+  .key h4 { color:var(--accent-deep); margin-top:0; }
+  .warn { background:linear-gradient(135deg,#fff0ee 0%,#fae0db 100%); border-left:4px solid var(--accent); padding:14px 22px; margin:20px 0; border-radius:0 4px 4px 0; box-shadow:0 12px 30px -22px rgba(139,26,26,0.4); }
+  .warn b { color:var(--accent); }
+  .bright { background:linear-gradient(135deg,#effaef 0%,#d8ebd4 100%); border-left:4px solid var(--accent2); padding:14px 22px; margin:20px 0; border-radius:0 4px 4px 0; box-shadow:0 12px 30px -22px rgba(31,61,43,0.4); }
+  .bright b { color:var(--accent2); }
+  ul,ol { margin:12px 0 16px; padding-left:26px; } li { margin:7px 0; }
+  ol > li::marker { color:var(--accent); font-weight:700; } ul > li::marker { color:var(--gold); }
+  table.daewoon { width:100%; border-collapse:separate; border-spacing:0; margin:20px 0 32px; font-size:13.8px; background:var(--paper-card); box-shadow:0 15px 30px -25px rgba(60,40,20,0.3); border-radius:4px; overflow:hidden; border:1px solid var(--line); }
+  table.daewoon th,table.daewoon td { border-bottom:1px solid var(--line-soft); border-right:1px solid var(--line-soft); padding:10px; text-align:center; }
+  table.daewoon th:last-child,table.daewoon td:last-child { border-right:none; }
+  table.daewoon tr:last-child td { border-bottom:none; }
+  table.daewoon th { background:linear-gradient(180deg,#2a201a,#1a1410); color:#f3e9c8; letter-spacing:0.1em; }
+  table.daewoon td.note { text-align:left; }
+  table.daewoon tbody tr:nth-child(even) { background:rgba(232,221,193,0.25); }
+  /* score */
+  .scorebox { background:var(--paper-card); border:1px solid var(--line); border-radius:6px; padding:24px; margin:24px 0; box-shadow:0 18px 36px -26px rgba(60,40,20,0.3); }
+  .score-row { display:grid; grid-template-columns:160px 1fr 70px; align-items:center; gap:12px; margin:10px 0; }
+  .score-row .name { font-weight:700; color:var(--accent2); font-size:14.5px; }
+  .score-bar { height:14px; background:#e7dcc0; border-radius:7px; overflow:hidden; }
+  .score-bar > span { display:block; height:100%; background:linear-gradient(90deg,var(--gold-soft),var(--accent)); border-radius:7px; }
+  .score-row .val { text-align:right; font-family:"Cormorant Garamond",serif; font-weight:700; color:var(--accent); font-size:16px; }
+  .total-score { text-align:center; margin:22px 0 6px; }
+  .total-score .big { font-family:"Cormorant Garamond",serif; font-size:64px; font-weight:700; color:var(--accent); line-height:1; }
+  .total-score .stars { color:var(--gold); font-size:24px; letter-spacing:0.2em; margin-top:6px; }
+  .final-card { background:linear-gradient(135deg,#fdfaf0 0%,#f7eccc 100%); border:2px solid var(--accent); border-radius:6px; padding:32px 32px 28px; margin:32px 0; box-shadow:0 30px 60px -30px rgba(139,26,26,0.4); position:relative; }
+  .final-card::before { content:"緣"; position:absolute; top:12px; right:18px; color:var(--accent); opacity:0.15; font-size:78px; font-family:"Nanum Myeongjo",serif; font-weight:800; line-height:1; }
+  .final-card .quote { font-family:"Nanum Myeongjo","Noto Serif KR",serif; font-size:20px; line-height:1.9; text-align:center; color:var(--accent-deep); font-weight:700; padding:14px 0 20px; border-bottom:1px solid rgba(139,26,26,0.2); margin-bottom:18px; letter-spacing:0.03em; }
+  footer { margin-top:90px; padding:30px 24px; border-top:2px solid var(--accent); background:linear-gradient(180deg,transparent,rgba(247,241,227,0.4)); color:var(--muted); font-size:12.5px; text-align:center; letter-spacing:0.03em; line-height:1.8; }
+  footer::before { content:"✦ ✦ ✦"; display:block; color:var(--gold); letter-spacing:1em; margin-bottom:14px; font-size:10px; }
+  @media (max-width:720px) { .wrap{padding:40px 18px 80px;} header.cover h1{font-size:26px;} h2.section{font-size:21px;padding:16px 18px;} .couple{grid-template-columns:1fr;} .score-row{grid-template-columns:120px 1fr 50px;} table.daewoon{font-size:12px;} table.daewoon th,table.daewoon td{padding:6px 4px;} }
+  @media print { body{font-size:11.5pt;background:#fff;} body::before{display:none;} .wrap{padding:0;max-width:none;} h2.section{page-break-after:avoid;box-shadow:none;} .key,.warn,.bright,.final-card,.scorebox{box-shadow:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ===== Cover: 두 이름 + 緣 워터마크(총평카드)와 호응. he-name=먼저/주로 남자, she-name=여자 ===== -->
+<header class="cover">
+  <div class="label">Gunghap · 宮合 Compatibility</div>
+  <div class="ornament">❖</div>
+  <h1><span class="he-name">{{이름A}}</span><span class="heart">♥</span><span class="she-name">{{이름B}}</span></h1>
+  <div class="subtitle"><span class="he">{{성별A}} · {{생년월일A}} ({{일간A 예: 壬水}})</span> &nbsp;×&nbsp; <span class="she">{{성별B}} · {{생년월일B}} ({{일간B 예: 辛金}})</span></div>
+  <div class="stamp">宮合鑑定 · CONFIDENTIAL</div>
+</header>
+
+<!-- 전제·한계 고지: compute_gunghap 의 입력 두 원국·분석 5축을 사람말로 명시 -->
+<div class="disclaimer">
+  <strong>※ 본 궁합 보고서의 전제</strong><br>
+  ① 두 사람의 생년월일시(<b>{{이름A}} {{양/음력·생년월일시A KST}} / {{이름B}} {{양/음력·생년월일시B KST}}</b>)로부터 직접 산출한 원국(sajuA.원국 / sajuB.원국)을 근거로 분석했습니다.<br>
+  ② 궁합은 <b>일간 관계 · 오행 상호보완 · 용신 교환 · 일지(부부궁) 합충 · 대운 시기 매칭</b>의 5축으로 봅니다. 한쪽의 단점이 상대로 보완되는지가 핵심입니다.<br>
+  ③ 궁합은 ‘점수’보다 <b>‘어떤 부분이 맞고 어떤 부분에 노력이 필요한지’</b>를 아는 도구입니다. 좋은 궁합도 노력 없이 유지되지 않고, 나쁜 궁합도 이해로 보완됩니다.
+</div>
+
+<!-- ===================== 1단계 ===================== -->
+<!-- 1. 사주 비교 — 두 원국을 나란히. sajuA.원국 / sajuB.원국 → .couple/.person/.p-pillars -->
+<h2 class="section"><span class="num">1.</span> 두 사람의 사주 한눈에 보기</h2>
+<div class="couple">
+  <!-- 남자(또는 A): person male. p-pillars 는 시·일·월·년 4기둥(천간 gan / 지지 ji) -->
+  <div class="person male">
+    <h3>{{이름A}} <span style="font-size:13px;font-weight:400;">({{성별A 한자, 예 男}})</span></h3>
+    <div class="meta">{{생년월일시A}} {{양/음력}} · 일간 {{일간A}}({{일간A 한글}})</div>
+    <div class="p-pillars">
+      <div><div class="gan">{{時干A}}</div><div class="ji">{{時支A}}</div><div class="lbl">시</div></div>
+      <div><div class="gan">{{日干A}}</div><div class="ji">{{日支A}}</div><div class="lbl">일</div></div>
+      <div><div class="gan">{{月干A}}</div><div class="ji">{{月支A}}</div><div class="lbl">월</div></div>
+      <div><div class="gan">{{年干A}}</div><div class="ji">{{年支A}}</div><div class="lbl">년</div></div>
+    </div>
+    <ul>
+      <li>{{일간A}} <b>{{신강신약A}}</b>, {{격국A}}</li>
+      <li>오행 {{오행분포A 예: 木2 火2 土0 金1 水3, 결핍은 <b class="lack">土0</b>}}</li>
+      <li>{{원국 특징A — 합충형해·핵심키워드}}</li>
+      <li>{{강점·약점 한 줄A}}</li>
+    </ul>
+  </div>
+  <!-- 여자(또는 B): person female -->
+  <div class="person female">
+    <h3>{{이름B}} <span style="font-size:13px;font-weight:400;">({{성별B 한자, 예 女}})</span></h3>
+    <div class="meta">{{생년월일시B}} {{양/음력}} · 일간 {{일간B}}({{일간B 한글}})</div>
+    <div class="p-pillars">
+      <div><div class="gan">{{時干B}}</div><div class="ji">{{時支B}}</div><div class="lbl">시</div></div>
+      <div><div class="gan">{{日干B}}</div><div class="ji">{{日支B}}</div><div class="lbl">일</div></div>
+      <div><div class="gan">{{月干B}}</div><div class="ji">{{月支B}}</div><div class="lbl">월</div></div>
+      <div><div class="gan">{{年干B}}</div><div class="ji">{{年支B}}</div><div class="lbl">년</div></div>
+    </div>
+    <ul>
+      <li>{{일간B}} <b>{{신강신약B}}</b>, {{격국B}}</li>
+      <li>오행 {{오행분포B, 결핍은 <b class="lack">木0</b>}}</li>
+      <li>{{원국 특징B}}</li>
+      <li>{{강점·약점 한 줄B}}</li>
+    </ul>
+  </div>
+</div>
+<p style="background:#fff;padding:12px 18px;border-left:4px solid var(--gold);border-radius:0 4px 4px 0;">
+<b>첫인상 진단</b> — <span class="she">{{B 본질 비유, 예: 차갑고 단단한 보석(辛金)}}</span>과 <span class="he">{{A 본질 비유, 예: 힘차게 흐르는 강물(壬水)}}</span>의 만남. <b>{{일간관계 한마디, 예: 금생수(金生水)}}</b>로 이어지고, {{보완/상충 한 줄 — 예: 서로의 결핍을 정확히 채우는 ‘보완형 궁합’}}입니다.
+</p>
+
+<!-- ===================== 2단계 ===================== -->
+<!-- 2. 일간 관계 — compute_gunghap.일간관계 (상생/상극/비화). 예: 金生水 금백수청 -->
+<h2 class="section"><span class="num">2.</span> 일간(日干) 관계 — {{일간관계 표제, 예: 金生水 · 금백수청(金白水清)}}</h2>
+<p>두 사람의 본질을 나타내는 일간은 <span class="she">{{이름B}} {{일간B}}({{일간B 비유}})</span>와 <span class="he">{{이름A}} {{일간A}}({{일간A 비유}})</span>입니다. 오행으로 <b>{{관계요약, 예: 금생수(金生水)}}</b> — {{누가 누구를 생/극/비화하는지 — 예: 이영희가 김철수를 생(生)하고 돕는}} 관계입니다.</p>
+<!-- 상생/상극/비화 명칭과 길흉을 term 으로. 예: 금백수청(吉) / 토극수(剋) / 동기비화(比和) -->
+<p>명리에서 <b>{{일간A}} + {{일간B}}</b>의 조합은 <span class="term">{{고전 명칭, 예: 금백수청(金白水清)}}</span>이라 하여, {{의미·길흉 설명}}. 쉽게 말하면 {{실생활 번역 — 한쪽이 한쪽을 어떻게 돕거나/억누르는지}}.</p>
+<div class="bright"><b>현실에서는</b> — {{일간관계가 일상 대화·정서 교감에서 어떻게 작동하는지 한 단락}}</div>
+
+<!-- ===================== 3단계 ===================== -->
+<!-- 3. 오행 상호보완 — compute_gunghap.오행상호보완 → .oh-compare. 결핍(lack)/풍부(full)/합산(fill) -->
+<h2 class="section"><span class="num">3.</span> 오행 상호보완 — 서로의 빈칸을 채운다</h2>
+<p>궁합에서 가장 중요한 것은 <b>‘한쪽에 없는 오행을 상대가 가졌는가’</b>입니다. 두 사람은 이 점에서 {{보완 정도 한 줄, 예: 거의 완벽에 가깝게 맞물립니다}}.</p>
+<table class="oh-compare">
+  <tr><th>오행</th><th>木 (목)</th><th>火 (화)</th><th>土 (토)</th><th>金 (금)</th><th>水 (수)</th></tr>
+  <!-- 각 셀: 결핍이면 class="lack" + "0 ✗", 풍부면 class="full". 합산행은 모든 td 에 class="fill" -->
+  <tr><td class="rowh">{{이름A}} {{성별A}}</td><td>{{A木}}</td><td>{{A火}}</td><td>{{A土}}</td><td>{{A金}}</td><td>{{A水}}</td></tr>
+  <tr><td class="rowh">{{이름B}} {{성별B}}</td><td>{{B木}}</td><td>{{B火}}</td><td>{{B土}}</td><td>{{B金}}</td><td>{{B水}}</td></tr>
+  <tr><td class="rowh">합쳐보면</td><td class="fill">{{合木}}</td><td class="fill">{{合火}}</td><td class="fill">{{合土}}</td><td class="fill">{{合金}}</td><td class="fill">{{合水}}</td></tr>
+</table>
+<ul>
+  <li><b><span class="he">{{A에게 없는/약한 오행}}</span></b> → <span class="she">{{B가 채우는 양·의미}}</span></li>
+  <li><b><span class="she">{{B에게 없는/약한 오행}}</span></b> → <span class="he">{{A가 채우는 양·의미}}</span></li>
+  <li>{{용신 보강 포인트 — 결정적인 보완 한 줄}}</li>
+  <li>{{합산 결과 총평 — 예: 함께 있으면 다섯 기운이 모두 갖춰지는 ‘완성된 한 쌍’}}</li>
+</ul>
+<div class="key"><h4>핵심 — {{한 줄 제목, 예: 두 사람은 ‘반쪽이 맞는 퍼즐’}}</h4><p>{{합산 오행이 얼마나 완전해지는지 + 십성교차(compute_gunghap.십성교차)로 본 역할 보충}}</p></div>
+
+<!-- ===================== 4단계 ===================== -->
+<!-- 4. 용신 교환 — 내 용신을 상대가 가졌는가. sajuA/B 용신 + 오행상호보완·십성교차 종합 -->
+<h2 class="section"><span class="num">4.</span> 용신(用神) 교환 — 서로가 서로의 ‘약’이다 <span style="font-size:14px;color:var(--accent);">★핵심</span></h2>
+<p><span class="term">용신(用神)</span>은 ‘그 사람의 인생을 가장 살리는 오행’입니다. 궁합의 최고 등급은 <b>‘내 용신을 상대가 가지고 있는’</b> 경우인데, {{이 커플이 해당하는지 한 줄}}.</p>
+<div class="couple">
+  <div class="person female">
+    <h3>{{이름B}}의 용신 = {{용신B 오행}}</h3>
+    <p style="font-size:14.5px;">{{B가 용신을 필요로 하는 이유}}<br>→ <b><span class="he">{{A가 그 오행을 얼마나 가졌는지}}</span></b><br>{{즉 A는 B에게 무엇인가 — 한 줄}}</p>
+  </div>
+  <div class="person male">
+    <h3>{{이름A}}의 용신 = {{용신A 오행}}</h3>
+    <p style="font-size:14.5px;">{{A가 용신을 필요로 하는 이유}}<br>→ <b><span class="she">{{B가 그 오행을 얼마나 가졌는지}}</span></b><br>{{즉 B는 A에게 무엇인가 — 한 줄}}</p>
+  </div>
+</div>
+<div class="bright"><b>결론</b> — {{상호 용신 공급 여부 총평. 예: A는 B의 온기(火)를, B는 A의 안정(土)을 준다}}</div>
+
+<!-- ===================== 5단계 ===================== -->
+<!-- 5. 일지 합충형해 — compute_gunghap.일지관계 (부부궁). 합·충·형·해·원진 + 기타 지지 상호작용 -->
+<h2 class="section"><span class="num">5.</span> 부부궁(일지)·지지 합충형해 — 가까이서의 케미</h2>
+<h3>5-1. 일지(日支) 관계 — {{日支A}}({{이름A}}) ↔ {{日支B}}({{이름B}}) <span style="font-size:13px;color:var(--accent);">{{길흉표기, 예: ▲주의 또는 ✓}}</span></h3>
+<p>일지는 <b>배우자 자리(부부궁)</b>입니다. {{이름A}} {{日支A}} ↔ {{이름B}} {{日支B}}는 <span class="term">{{합충형해 명칭, 예: 자미 해(子未 害)·원진(怨嗔)}}</span> 관계 — {{의미 한 줄}}입니다.</p>
+<!-- 길한 일지면 .bright, 흉/주의면 .warn 사용 -->
+<div class="warn"><b>현실에서는</b> — {{일지 관계가 동거·일상에서 어떻게 나타나는지 + 관리 포인트}}</div>
+
+<h3>5-2. 그 외 지지 상호작용 — {{전반 평가, 예: 대체로 좋음}} <span style="font-size:13px;color:var(--accent2);">{{✓ 등}}</span></h3>
+<ul>
+  <!-- 삼합·육합·방합·반합·충·형·파·해를 각 항목으로. 각 결과가 누구의 용신을 돕는지 명시 -->
+  <li><b>{{지지조합1, 예: A午 + B戌 = 午戌 화국(火局)}}</b> → {{효과}}</li>
+  <li><b>{{지지조합2}}</b> → {{효과}}</li>
+  <li><b>{{지지조합3}}</b> → {{효과}}</li>
+  <li>띠: <b>{{이름A}} {{띠A}} · {{이름B}} {{띠B}}</b> — {{띠 궁합 한 줄}}</li>
+</ul>
+<p>정리하면 {{지지 만남의 종합 — 길흉 방향 + 유일한 주의점}}</p>
+
+<!-- ===================== 6단계 ===================== -->
+<!-- 6. 연애운 — 끌림 구조 + 연애 중 주의점. 십성교차·기질로 풀이 -->
+<h2 class="section"><span class="num">6.</span> 연애운(戀愛運) — 성향의 케미</h2>
+<h3>6-1. 끌림의 구조 <span style="font-size:13px;color:var(--gold);">★</span></h3>
+<p><span class="he">{{이름A}}({{A 기질 요약}})</span>는 <b>{{A 연애 성향}}</b> 쪽이고, <span class="she">{{이름B}}({{B 기질 요약}})</span>는 <b>{{B 연애 성향}}</b> 쪽입니다. {{끌림 구도 — 예: 다가가는 × 받는}}.</p>
+<div class="bright"><b>연애 케미 평가</b> — {{서로 매력을 느끼는 지점 + 밀고당김의 흐름 한 단락}}</div>
+<h3>6-2. 연애 중 주의점 <span style="font-size:13px;color:var(--accent);">▲</span></h3>
+<ul>
+  <li><b>{{주의점1 제목}}</b> — {{내용}}</li>
+  <li><b>{{주의점2 제목}}</b> — {{내용}}</li>
+  <li><b>{{주의점3 제목}}</b> — {{내용}}</li>
+</ul>
+
+<!-- ===================== 7단계 ===================== -->
+<!-- 7. 결혼운 — 장기 관계·역할 분담 + 결혼생활 변수 -->
+<h2 class="section"><span class="num">7.</span> 결혼운(結婚運) — 장기 관계와 역할</h2>
+<h3>7-1. 부부로서의 궁합 <span style="font-size:13px;color:var(--accent2);">{{별점, 예: ★★★★}}</span></h3>
+<p>결혼 관점에서 이 커플의 핵심은 <b>{{한 문장 핵심, 예: 역할 분담이 명확할 때 최고의 보완 부부가 된다}}</b>는 것입니다.</p>
+<div class="bright">
+<b>이상적 역할 구도</b>
+<ul>
+  <li><b><span class="he">{{이름A}}</span> = {{A 역할}}</b></li>
+  <li><b><span class="she">{{이름B}}</span> = {{B 역할}}</b></li>
+  <li>{{재정·생활 등 실질 분담 한 줄}}</li>
+</ul>
+</div>
+<h3>7-2. 결혼생활의 변수 <span style="font-size:13px;color:var(--accent);">▲</span></h3>
+<ul>
+  <li><b>{{변수1}}</b> — {{해법 방향}}</li>
+  <li><b>{{변수2}}</b> — {{해법 방향}}</li>
+  <li><b>{{변수3}}</b> — {{해법 방향}}</li>
+</ul>
+<div class="key"><h4>한 줄 요약</h4><p><b>“{{오행·용신 vs 일지·기질 한 줄 요약}}”</b> {{역할 인정 시 결론}}</p></div>
+
+<!-- ===================== 8단계 ===================== -->
+<!-- 8. 결혼 적기 — 두 사람 대운·세운 겹쳐 ‘둘 다 유리한 해’ 찾기. table.daewoon 재사용 -->
+<h2 class="section"><span class="num">8.</span> 결혼 적기 — 두 사람의 운 매칭</h2>
+<p>두 사람의 대운·세운을 겹쳐, <b>‘둘 다 결혼에 유리한 시기’</b>를 찾습니다.</p>
+<table class="daewoon">
+  <tr><th>연도</th><th>{{이름B}} ({{성별B}})</th><th>{{이름A}} ({{성별A}})</th><th>커플 매칭</th></tr>
+  <!-- 연도별: 각자의 세운/대운 간지·십성 길흉 + note 칸에 커플 종합. 추천 해는 ✓/✓✓ 강조 -->
+  <tr><td>{{연도1}}</td><td>{{B 세운1}}</td><td>{{A 세운1}}</td><td class="note">{{커플 매칭1}}</td></tr>
+  <tr><td><b>{{연도2}}</b></td><td>{{B 세운2}}</td><td>{{A 세운2}}</td><td class="note">{{커플 매칭2}}</td></tr>
+  <tr><td><b>{{연도3}}</b></td><td>{{B 세운3}}</td><td><b>{{A 세운3}}</b></td><td class="note">✓ {{커플 매칭3}}</td></tr>
+  <tr><td><b>{{연도4}}</b></td><td>{{B 세운4}}</td><td><b>{{A 세운4}}</b></td><td class="note">✓✓ <b>{{최적기 매칭}}</b></td></tr>
+  <tr><td>{{연도5}}</td><td>{{B 세운5}}</td><td>{{A 세운5}}</td><td class="note">{{커플 매칭5}}</td></tr>
+</table>
+<div class="bright"><b>결혼 적기 결론</b> — {{두 사람 모두에게 가장 좋은 결혼 시기 + 근거 한 단락}}</div>
+
+<!-- ===================== 9단계 ===================== -->
+<!-- 9. 갈등 요인 & 해법 — 일지·기질·변동성 등에서 도출. 요인+해법을 ol 로 -->
+<h2 class="section"><span class="num">9.</span> 갈등 요인 & 해법</h2>
+<ol>
+  <li><b>{{갈등요인1 제목}}</b><br>해법: {{구체 행동 처방}}</li>
+  <li><b>{{갈등요인2 제목}}</b><br>해법: {{구체 행동 처방}}</li>
+  <li><b>{{갈등요인3 제목}}</b><br>해법: {{구체 행동 처방}}</li>
+  <li><b>{{갈등요인4 제목}}</b><br>해법: {{구체 행동 처방}}</li>
+  <li><b>{{갈등요인5 제목}}</b><br>해법: {{구체 행동 처방}}</li>
+</ol>
+
+<!-- ===================== 10단계 ===================== -->
+<!-- 10. 종합 점수 & 총평 — compute_gunghap.종합점수.score → .scorebox/.score-bar + ★/100 -->
+<h2 class="section"><span class="num">10.</span> 종합 점수 & 총평</h2>
+<div class="scorebox">
+  <!-- 각 항목 score-bar 의 width:NN% 와 val 숫자를 항목 점수로. 합산은 종합점수.score -->
+  <div class="score-row"><span class="name">{{항목1, 예: 일간 관계}}</span><span class="score-bar"><span style="width:{{점수1}}%"></span></span><span class="val">{{점수1/10}}</span></div>
+  <div class="score-row"><span class="name">오행 상호보완</span><span class="score-bar"><span style="width:{{점수2}}%"></span></span><span class="val">{{점수2/10}}</span></div>
+  <div class="score-row"><span class="name">용신 교환</span><span class="score-bar"><span style="width:{{점수3}}%"></span></span><span class="val">{{점수3/10}}</span></div>
+  <div class="score-row"><span class="name">부부궁(일지)</span><span class="score-bar"><span style="width:{{점수4}}%"></span></span><span class="val">{{점수4/10}}</span></div>
+  <div class="score-row"><span class="name">기질·성향 조화</span><span class="score-bar"><span style="width:{{점수5}}%"></span></span><span class="val">{{점수5/10}}</span></div>
+  <div class="score-row"><span class="name">연애 케미</span><span class="score-bar"><span style="width:{{점수6}}%"></span></span><span class="val">{{점수6/10}}</span></div>
+  <div class="total-score">
+    <div class="big">{{종합점수.score}}<span style="font-size:28px;">/100</span></div>
+    <div class="stars">{{별점, 예: ★★★★☆}}</div>
+    <div style="color:var(--muted);font-size:13px;margin-top:6px;">{{등급 한 줄, 예: 상위권 — ‘보완형 좋은 궁합’ (노력 시 매우 견고)}}</div>
+  </div>
+</div>
+
+<!-- 緣 워터마크가 들어가는 총평 카드 -->
+<div class="final-card">
+<div class="quote">{{두 사람의 인연을 압축한 4행 시구 — 명리적 비유}}</div>
+<p><b>{{이름A}} ♥ {{이름B}}의 궁합은 ‘{{한마디 정의}}({{종합점수.score}}점)’입니다.</b> {{일간·오행·용신 관계 요약 — 강점}}</p>
+<p>다만 {{일지·기질·변동 등 숙제 요약}}. {{‘마주 보면 부딪히고 나란히 서면 완성’ 류의 결론 + 결혼 적기}}</p>
+<p style="text-align:right;color:var(--accent);font-size:13px;margin-top:24px;letter-spacing:0.3em;">— 宮合鑑定 終 —</p>
+</div>
+
+<footer>
+  본 궁합 보고서는 {{이름A}}({{생년월일시A}})·{{이름B}}({{생년월일시B}}) 두 분의 {{양/음력}} 생년월일시로 산출한 사주 원국을 근거로 작성되었습니다.<br>
+  궁합은 참고 자료이며, 관계의 성패는 두 사람의 이해와 노력에 달려 있습니다.<br>
+  각 개인 상세는 별도 개인 보고서(individual.html)를 함께 참고하십시오. · saju-engine v{{버전}}
+</footer>
+
+</div>
+</body>
+</html>

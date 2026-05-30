@@ -1,0 +1,20 @@
+{
+  "name": "saju-engine-mcp",
+  "version": "0.1.0",
+  "description": "Deterministic Korean Saju (Four Pillars / 사주명리) calculation engine, exposed as a zero-dependency MCP server.",
+  "type": "module",
+  "main": "lib/saju.mjs",
+  "bin": { "saju-engine-mcp": "./server.mjs" },
+  "exports": {
+    ".": "./lib/saju.mjs",
+    "./server": "./server.mjs"
+  },
+  "files": ["server.mjs", "lib/"],
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node ../test/validate.mjs"
+  },
+  "engines": { "node": ">=18" },
+  "keywords": ["saju", "사주", "manse", "만세력", "four-pillars", "bazi", "mcp"],
+  "license": "MIT"
+}

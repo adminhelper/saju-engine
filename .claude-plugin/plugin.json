@@ -1,0 +1,7 @@
+{
+  "name": "saju-engine",
+  "version": "0.1.0",
+  "description": "사주(四柱/명리) 상담 보고서 생성기 — 결정론 만세력 MCP 엔진 + 30년 역술가 페르소나 skill + 단청(丹靑) HTML 템플릿. /saju 로 누구나 정밀한 사주/궁합 보고서를 HTML 파일로 생성.",
+  "keywords": ["saju", "사주", "명리", "manse", "만세력", "four-pillars", "bazi", "궁합", "korean-astrology"],
+  "license": "MIT"
+}

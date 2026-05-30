@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<!--
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║  사주 명리 상담 보고서 — 개인용 템플릿 (丹靑 design)                      ║
+  ║  saju-engine plugin · templates/individual.html                        ║
+  ║                                                                        ║
+  ║  ▸ 사용법: {{ }} 로 표시된 모든 자리를 compute_saju 결과 + 역술가 통변   ║
+  ║    으로 채운다. <style> 블록은 그대로 두는 것을 권장(디자인 일관성).      ║
+  ║  ▸ 12단계 섹션 순서·번호는 고정. 각 섹션은 예시 마크업을 복제·확장.       ║
+  ║  ▸ 신뢰도 칩: <span class="conf h">상</span> / m 중 / l 하            ║
+  ║  ▸ 전문용어는 <span class="term">용어</span> 로 감싸고 "쉽게 말하면…"  ║
+  ║    으로 실생활 번역을 반드시 덧붙인다.                                   ║
+  ╚══════════════════════════════════════════════════════════════════════╝
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{이름}}({{한자}}) 사주 명리 상담 보고서 — {{생년월일}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@400;500;700;900&family=Nanum+Myeongjo:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --ink-soft: #3a2f28;
+    --paper: #f7f1e3;
+    --paper-deep: #efe7d2;
+    --paper-card: #fdfaf0;
+    --accent: #8b1a1a;        /* dancheong 적색 */
+    --accent-deep: #5e0f0f;
+    --accent2: #1f3d2b;       /* dancheong 녹청 */
+    --accent3: #1a3a5c;       /* 청 */
+    --gold: #a87a2a;
+    --gold-soft: #d4ab5a;
+    --muted: #6b5d4e;
+    --line: #c9bfa3;
+    --line-soft: #e1d8bc;
+    --hi: #fff5cc;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: "Gowun Batang", "Noto Serif KR", "Nanum Myeongjo", "Apple SD Gothic Neo", serif;
+    line-height: 1.95;
+    font-size: 16.5px;
+    letter-spacing: 0.005em;
+    background:
+      radial-gradient(ellipse at top, #fbf6e7 0%, #f3ecd6 60%, #e9dfc0 100%) fixed,
+      var(--paper);
+    background-attachment: fixed;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(168,122,42,0.04) 0, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(139,26,26,0.04) 0, transparent 40%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.7;
+  }
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 960px; margin: 0 auto; padding: 80px 36px 140px;
+  }
+
+  /* ===== Cover ===== */
+  header.cover {
+    text-align: center;
+    padding: 48px 24px 40px;
+    margin-bottom: 50px;
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(253,250,240,0.9) 0%, rgba(247,241,227,0.6) 100%);
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 60px -30px rgba(60,40,20,0.18), inset 0 0 0 1px rgba(255,255,255,0.4);
+    border-radius: 2px;
+  }
+  header.cover::before, header.cover::after {
+    content: ""; position: absolute; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 1px; background: var(--accent);
+  }
+  header.cover::before { top: 18px; }
+  header.cover::after  { bottom: 18px; }
+  header.cover .label {
+    font-family: "Cormorant Garamond", "Noto Serif KR", serif;
+    font-style: italic;
+    font-size: 13px; letter-spacing: 0.5em; color: var(--accent);
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  header.cover h1 {
+    font-family: "Nanum Myeongjo", "Noto Serif KR", serif;
+    font-size: 46px; margin: 0 0 14px; letter-spacing: 0.18em;
+    color: var(--ink);
+    font-weight: 800;
+  }
+  header.cover h1 .hanja {
+    display: block; font-size: 17px; letter-spacing: 0.5em;
+    color: var(--accent); margin-top: 8px; font-weight: 400;
+  }
+  header.cover .subtitle {
+    color: var(--ink-soft); font-size: 14.5px; letter-spacing: 0.08em;
+    margin-top: 6px;
+  }
+  header.cover .stamp {
+    display: inline-block; margin-top: 22px;
+    padding: 8px 18px;
+    border: 1.5px solid var(--accent);
+    color: var(--accent); font-size: 11px; letter-spacing: 0.4em;
+    background: rgba(255,255,255,0.4);
+    font-family: "Cormorant Garamond", serif;
+  }
+  .ornament {
+    text-align: center; color: var(--gold); letter-spacing: 1em;
+    margin: 18px 0 6px; font-size: 14px;
+  }
+
+  /* ===== Disclaimer ===== */
+  .disclaimer {
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+    padding: 22px 26px;
+    margin: 24px 0 50px;
+    font-size: 14.2px;
+    color: var(--ink-soft);
+    border-radius: 2px;
+    box-shadow: 0 10px 30px -20px rgba(60,40,20,0.2);
+  }
+  .disclaimer strong { color: var(--accent); letter-spacing: 0.05em; }
+
+  /* ===== Section heading ===== */
+  h2.section {
+    font-family: "Nanum Myeongjo", "Noto Serif KR", serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin: 80px 0 28px;
+    padding: 22px 26px;
+    background:
+      linear-gradient(90deg, rgba(139,26,26,0.08) 0%, rgba(139,26,26,0.02) 50%, transparent 100%);
+    border-left: 5px solid var(--accent);
+    border-bottom: 1px solid var(--line-soft);
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    position: relative;
+  }
+  h2.section::after {
+    content: ""; position: absolute; left: 26px; bottom: -6px;
+    width: 36px; height: 2px; background: var(--gold);
+  }
+  h2.section .num {
+    color: var(--accent); font-weight: 900; margin-right: 14px;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 32px;
+    font-style: italic;
+  }
+  h3 {
+    font-family: "Noto Serif KR", serif;
+    margin-top: 40px; font-size: 20px; color: var(--accent2);
+    border-bottom: 1px solid var(--line-soft); padding-bottom: 8px;
+    letter-spacing: 0.02em;
+    font-weight: 700;
+  }
+  h4 {
+    margin: 26px 0 10px; font-size: 16.5px; color: var(--accent);
+    letter-spacing: 0.03em;
+  }
+  p { margin: 14px 0; text-align: justify; word-break: keep-all; }
+  b, strong { color: var(--ink); font-weight: 700; }
+
+  .term {
+    background: linear-gradient(180deg, transparent 55%, var(--hi) 55%);
+    padding: 0 2px;
+    font-weight: 600;
+    color: var(--accent-deep);
+  }
+
+  /* ===== Pillars ===== */
+  .pillars-wrap {
+    margin: 28px 0 32px;
+    padding: 24px;
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: 0 20px 40px -25px rgba(60,40,20,0.25);
+  }
+  .pillars {
+    display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr;
+    gap: 0; border: 1px solid var(--ink);
+    background: #fff;
+  }
+  .pillars > div {
+    padding: 12px 8px; text-align: center;
+    border-right: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+  .pillars > div:nth-child(5n) { border-right: none; }
+  .pillars .head {
+    background: linear-gradient(180deg, #2a201a, #1a1410);
+    color: #f3e9c8; font-weight: 700; letter-spacing: 0.15em;
+    font-family: "Nanum Myeongjo", serif;
+    padding: 14px 8px;
+  }
+  .pillars .rowlabel {
+    background: linear-gradient(90deg, var(--paper-deep), #e7dcc0);
+    font-weight: 700; color: var(--accent2);
+    letter-spacing: 0.08em;
+    font-size: 13px;
+  }
+  .pillars .ch {
+    font-size: 36px; font-weight: 800; color: var(--accent);
+    padding: 18px 0 8px;
+    font-family: "Nanum Myeongjo", "Noto Serif KR", serif;
+    line-height: 1.2;
+    background:
+      radial-gradient(circle at center, rgba(168,122,42,0.06) 0%, transparent 70%);
+  }
+  .pillars .ch span {
+    font-size: 12px !important;
+    color: var(--muted) !important;
+    font-weight: 400;
+    display: inline-block;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+  .pillars .ji { background: linear-gradient(180deg, #fff, #faf3df); }
+  .pillars .ch.ji,
+  .pillars .ji.ch {
+    color: var(--accent2);
+    background:
+      radial-gradient(circle at center, rgba(31,61,43,0.07) 0%, transparent 70%);
+  }
+  .ilgan-mark {
+    display: inline-block; background: var(--accent); color: #fff;
+    font-size: 10px; padding: 2px 6px; border-radius: 8px;
+    letter-spacing: 0.15em; margin-left: 4px; vertical-align: middle;
+  }
+
+  /* ===== Ohaeng ===== */
+  .ohaeng-bar {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 22px 0 32px;
+  }
+  .ohaeng-bar .cell {
+    text-align: center; padding: 18px 8px; border-radius: 6px;
+    background: var(--paper-card); border: 1px solid var(--line-soft);
+    box-shadow: 0 8px 20px -14px rgba(60,40,20,0.25);
+    position: relative;
+    transition: transform 0.2s ease;
+  }
+  .ohaeng-bar .cell:hover { transform: translateY(-2px); }
+  .ohaeng-bar .cell .glyph {
+    font-family: "Nanum Myeongjo", serif;
+    font-size: 28px; font-weight: 800; display: block; line-height: 1; margin-bottom: 6px;
+  }
+  .ohaeng-bar .cell .count {
+    font-size: 22px; font-weight: 800; display: block; line-height: 1; margin-bottom: 4px;
+    font-family: "Cormorant Garamond", serif;
+  }
+  .ohaeng-bar .cell .label {
+    font-size: 12px; color: var(--muted); letter-spacing: 0.1em;
+  }
+  .ohaeng-bar .cell.deficit {
+    background: linear-gradient(180deg, #fff, #fbeaea);
+    border-color: #e9c0c0;
+  }
+  .mok { color: #2d6a2b; }
+  .hwa { color: #b53c1f; }
+  .to  { color: #8a6a1f; }
+  .geum{ color: #6e6e6e; }
+  .su  { color: #1f3a6e; }
+
+  /* ===== Daewoon table ===== */
+  table.daewoon {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    margin: 20px 0 32px; font-size: 13.8px;
+    background: var(--paper-card);
+    box-shadow: 0 15px 30px -25px rgba(60,40,20,0.3);
+    border-radius: 4px; overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  table.daewoon th, table.daewoon td {
+    border-bottom: 1px solid var(--line-soft);
+    border-right: 1px solid var(--line-soft);
+    padding: 10px 10px; text-align: center;
+  }
+  table.daewoon th:last-child, table.daewoon td:last-child { border-right: none; }
+  table.daewoon tr:last-child td { border-bottom: none; }
+  table.daewoon th {
+    background: linear-gradient(180deg, #2a201a, #1a1410);
+    color: #f3e9c8; letter-spacing: 0.1em; font-weight: 700;
+  }
+  table.daewoon td.note { text-align: left; }
+  table.daewoon tbody tr:nth-child(even) { background: rgba(232,221,193,0.25); }
+
+  /* ===== Callout boxes ===== */
+  .key {
+    background: linear-gradient(135deg, #fff9e2 0%, #f6ecc5 100%);
+    border: 1px solid var(--gold);
+    border-left: 4px solid var(--gold);
+    padding: 18px 22px;
+    margin: 20px 0;
+    border-radius: 4px;
+    box-shadow: 0 12px 30px -22px rgba(168,122,42,0.5);
+  }
+  .key h4 { color: var(--accent-deep); margin-top: 0; }
+  .warn {
+    background: linear-gradient(135deg, #fff0ee 0%, #fae0db 100%);
+    border-left: 4px solid var(--accent);
+    padding: 14px 22px; margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 12px 30px -22px rgba(139,26,26,0.4);
+  }
+  .warn b { color: var(--accent); }
+  .bright {
+    background: linear-gradient(135deg, #effaef 0%, #d8ebd4 100%);
+    border-left: 4px solid var(--accent2);
+    padding: 14px 22px; margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 12px 30px -22px rgba(31,61,43,0.4);
+  }
+  .bright b { color: var(--accent2); }
+  .timecase {
+    background: linear-gradient(135deg, #eef4fb 0%, #d9e6f4 100%);
+    border-left: 4px solid var(--accent3);
+    padding: 14px 22px; margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 12px 30px -22px rgba(26,58,92,0.35);
+  }
+  .timecase b { color: var(--accent3); }
+
+  /* ===== Lists ===== */
+  ul, ol { margin: 12px 0 16px; padding-left: 26px; }
+  li { margin: 7px 0; }
+  ol > li::marker { color: var(--accent); font-weight: 700; }
+  ul > li::marker { color: var(--gold); }
+
+  /* ===== Confidence chip ===== */
+  .conf {
+    display: inline-block; font-size: 10.5px; padding: 2px 10px; border-radius: 10px;
+    margin-left: 8px; vertical-align: middle; letter-spacing: 0.15em;
+    font-family: "Cormorant Garamond", "Noto Serif KR", serif;
+    font-weight: 600;
+  }
+  .conf.h { background: var(--accent2); color: #fff; }
+  .conf.m { background: var(--gold); color: #fff; }
+  .conf.l { background: #999; color: #fff; }
+
+  /* ===== Final card ===== */
+  .final-card {
+    background:
+      linear-gradient(135deg, #fdfaf0 0%, #f7eccc 100%);
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    padding: 32px 32px 28px;
+    margin: 32px 0;
+    box-shadow: 0 30px 60px -30px rgba(139,26,26,0.4);
+    position: relative;
+  }
+  .final-card::before {
+    content: "終"; position: absolute; top: 12px; right: 16px;
+    color: var(--accent); opacity: 0.15; font-size: 80px;
+    font-family: "Nanum Myeongjo", serif; font-weight: 800;
+    line-height: 1;
+  }
+  .final-card .quote {
+    font-family: "Nanum Myeongjo", "Noto Serif KR", serif;
+    font-size: 20px; line-height: 1.9; text-align: center;
+    color: var(--accent-deep); font-weight: 700;
+    padding: 14px 0 20px;
+    border-bottom: 1px solid rgba(139,26,26,0.2);
+    margin-bottom: 18px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ===== Footer ===== */
+  footer {
+    margin-top: 90px; padding: 30px 24px;
+    border-top: 2px solid var(--accent);
+    background: linear-gradient(180deg, transparent, rgba(247,241,227,0.4));
+    color: var(--muted); font-size: 12.5px; text-align: center;
+    letter-spacing: 0.03em;
+    line-height: 1.8;
+  }
+  footer::before {
+    content: "✦ ✦ ✦";
+    display: block; color: var(--gold); letter-spacing: 1em;
+    margin-bottom: 14px; font-size: 10px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 720px) {
+    .wrap { padding: 40px 18px 80px; }
+    header.cover h1 { font-size: 32px; }
+    h2.section { font-size: 22px; padding: 16px 18px; }
+    h2.section .num { font-size: 24px; }
+    .pillars .ch { font-size: 26px; }
+    .ohaeng-bar { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .ohaeng-bar .cell { padding: 10px 4px; }
+    .ohaeng-bar .cell .glyph { font-size: 20px; }
+    .ohaeng-bar .cell .count { font-size: 16px; }
+    table.daewoon { font-size: 12px; }
+    table.daewoon th, table.daewoon td { padding: 6px 4px; }
+  }
+  @media print {
+    body { font-size: 11.5pt; background: #fff; }
+    body::before { display: none; }
+    .wrap { padding: 0; max-width: none; }
+    h2.section { page-break-after: avoid; box-shadow: none; }
+    .key, .warn, .bright, .final-card { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="cover">
+  <div class="label">Saju · Myeongri Consultation</div>
+  <div class="ornament">· ✦ ·</div>
+  <h1>{{이름}}<span class="hanja">{{한자 띄어쓰기, 예: 邊 崇 文 — 없으면 생략}}</span></h1>
+  <div class="subtitle">{{생년월일}} ({{양력/음력}}) · {{시지}}時 {{HH:MM}} · {{성별}}</div>
+  <div class="stamp">私的鑑定 · CONFIDENTIAL</div>
+</header>
+
+<!-- 전제·한계 고지: compute_saju 의 disclaimer/warnings 를 사람말로 풀어 명시 -->
+<div class="disclaimer">
+  <strong>※ 본 보고서의 전제와 한계</strong><br>
+  ① 원국은 입력된 <b>{{생년월일시}}</b> 로부터 <b>태양황경 절기·JDN 일주·진태양시 환산</b>으로 산출(saju-engine). 한국천문연구원 만세력과 1일 단위 <b>교차검증 권장</b>.<br>
+  ② {{성별·대운 방향 — 예: 양년 남자라 대운 순행}}.<br>
+  ③ {{진태양시 보정·시지 경계 메모 — warnings 반영}}.<br>
+  ④ 판단 신뢰도는 각 단락 옆에 <span class="conf h">상</span> <span class="conf m">중</span> <span class="conf l">하</span> 로 표시합니다.
+</div>
+
+<!-- ===================== 1단계 ===================== -->
+<h2 class="section"><span class="num">1.</span> 만세력 판독 요약</h2>
+<p>{{원국 개요 1~2문장. 캡처본 없이 자체 산출했음을 명시.}}</p>
+
+<div class="pillars-wrap">
+<div class="pillars">
+  <div class="head">區分</div>
+  <div class="head">시주 時柱</div>
+  <div class="head">일주 日柱</div>
+  <div class="head">월주 月柱</div>
+  <div class="head">년주 年柱</div>
+
+  <div class="rowlabel">천간 (天干)</div>
+  <div class="ch">{{時干}}<br><span>{{한글/음양오행}}</span></div>
+  <div class="ch">{{日干}}<span class="ilgan-mark">日干</span><br><span>{{한글/음양오행}}</span></div>
+  <div class="ch">{{月干}}<br><span>{{한글/음양오행}}</span></div>
+  <div class="ch">{{年干}}<br><span>{{한글/음양오행}}</span></div>
+
+  <div class="rowlabel">지지 (地支)</div>
+  <div class="ch ji">{{時支}}<br><span>{{한글/음양오행}}</span></div>
+  <div class="ch ji">{{日支}}<br><span>{{한글/음양오행}}</span></div>
+  <div class="ch ji">{{月支}}<br><span>{{한글/음양오행}}</span></div>
+  <div class="ch ji">{{年支}}<br><span>{{한글/음양오행}}</span></div>
+
+  <div class="rowlabel">십성 (十星)</div>
+  <div>천간: {{時干십성}}<br>지지: {{時支십성}}</div>
+  <div>일간 본인<br>지지: {{日支십성}}</div>
+  <div>천간: {{月干십성}}<br>지지: {{月支십성}}</div>
+  <div>천간: {{年干십성}}<br>지지: {{年支십성}}</div>
+
+  <div class="rowlabel">지장간 (支藏干)</div>
+  <div>{{時支 지장간}}</div>
+  <div>{{日支 지장간}}</div>
+  <div>{{月支 지장간}}</div>
+  <div>{{年支 지장간}}</div>
+
+  <div class="rowlabel">12운성 ({{日干}}기준)</div>
+  <div>{{時 12운성}}</div>
+  <div>{{日 12운성}}</div>
+  <div>{{月 12운성}}</div>
+  <div>{{年 12운성}}</div>
+
+  <div class="rowlabel">주요 신살</div>
+  <div>{{時 신살}}</div>
+  <div>{{日 신살}}</div>
+  <div>{{月 신살}}</div>
+  <div>{{年 신살}}</div>
+</div>
+</div>
+
+<h4>오행(五行) 분포 — 천간+지지 8자 기준</h4>
+<div class="ohaeng-bar">
+  <!-- 각 셀: 결핍(0개)이면 class 에 deficit 추가. mok/hwa/to/geum/su 색상 클래스 -->
+  <div class="cell mok"><span class="glyph">木</span><span class="count">{{목}}</span><span class="label">목 · {{십성그룹}}</span></div>
+  <div class="cell hwa"><span class="glyph">火</span><span class="count">{{화}}</span><span class="label">화 · {{십성그룹}}</span></div>
+  <div class="cell to"><span class="glyph">土</span><span class="count">{{토}}</span><span class="label">토 · {{십성그룹}}</span></div>
+  <div class="cell geum"><span class="glyph">金</span><span class="count">{{금}}</span><span class="label">금 · {{십성그룹}}</span></div>
+  <div class="cell su"><span class="glyph">水</span><span class="count">{{수}}</span><span class="label">수 · {{십성그룹}}</span></div>
+</div>
+
+<h4>대운(大運) 배열 — {{성별·양음년·순역}} / 대운수 ≒ {{대운수}}</h4>
+<p>{{대운 시작나이 산출 메모 — 절기까지 잔여일수 ÷ 3}}</p>
+<table class="daewoon">
+  <tr><th>나이</th>{{대운 나이 행 — <th>1</th><th>11</th>…}}</tr>
+  <tr><th>대운</th>{{간지 셀 — <td>丙子<br>병자</td>…}}</tr>
+  <tr><th>십성</th>{{천간/지지 십성 셀}}</tr>
+  <tr><th>색깔</th>{{각 대운 키워드}}</tr>
+</table>
+
+<!-- ===================== 2단계 ===================== -->
+<h2 class="section"><span class="num">2.</span> 원국 핵심 구조 분석</h2>
+<h3>2-1. 일간({{日干}})의 본질 <span class="conf h">상</span></h3>
+<p><span class="term">일간(日干)</span>이란 {{설명}}. 쉽게 말하면 {{실생활 번역}}.</p>
+<h3>2-2. 신강·신약(身强·身弱) 판단 <span class="conf h">상</span></h3>
+<p>{{신강신약 score/label/근거 — 득령·득지·득세. 현실 번역.}}</p>
+<h3>2-3. 격국(格局) 판별 <span class="conf m">중</span></h3>
+<p>{{격국}}</p>
+<h3>2-4. 용신·희신·기신·구신 <span class="conf h">상</span></h3>
+<ul><li><b>용신: {{오행}}</b> — {{이유}}</li>{{희신/기신/구신/한신}}</ul>
+<h3>2-5. 인생을 관통하는 반복 테마 <span class="conf h">상</span></h3>
+<ol>{{핵심 테마 4~5개}}</ol>
+<h3>2-6. 강점과 치명적 약점 <span class="conf h">상</span></h3>
+<div class="bright"><b>강점</b><ul>{{강점}}</ul></div>
+<div class="warn"><b>치명적 약점</b><ul>{{약점}}</ul></div>
+<h3>2-7. 감정 구조·연애 진입 방식·돈 다루는 방식 <span class="conf m">중</span></h3>
+<p>{{내용}}</p>
+
+<!-- ===================== 3단계 ===================== -->
+<h2 class="section"><span class="num">3.</span> 평생 총운 — 시기별 흐름</h2>
+{{대운별 유년기→노년기 시기별 흐름. 각 대운마다 <h3>나이대 (간지대운) <span class="conf …">…</span></h3><p>…</p>}}
+
+<!-- ===================== 4단계 ===================== -->
+<h2 class="section"><span class="num">4.</span> 금전운(財運) 정밀 분석</h2>
+<h3>4-1. 돈을 버는 구조적 형태 <span class="conf h">상</span></h3>
+<p>{{재성 구조}}</p>
+<h3>4-2. 큰돈을 만질 수 있는 사주인가? <span class="conf m">중</span></h3>
+<p>{{결론}}</p>
+<h3>4-3. 돈이 새는 패턴 <span class="conf h">상</span></h3>
+<ol>{{패턴}}</ol>
+<h3>4-4. 재물운 강해지는/새는 시기 <span class="conf h">상</span></h3>
+<table class="daewoon"><tr><th>구간</th><th>성격</th><th>핵심 사건 가능성</th></tr>{{행}}</table>
+<h3>4-5. 현실적 축재 전략 <span class="conf h">상</span></h3>
+<ul>{{전략}}</ul>
+
+<!-- ===================== 5단계 ===================== -->
+<h2 class="section"><span class="num">5.</span> 직업운(職業運) 분석</h2>
+{{타고난 적성 / 맞는 직업군·분야 / 조직 vs 사업 / 직업 전환기. <h3>…</h3><p>…</p> 반복}}
+
+<!-- ===================== 6단계 ===================== -->
+<h2 class="section"><span class="num">6.</span> 연애운(戀愛運) 분석</h2>
+{{연애 성향 / 이상형 / 만남 방식 / 위기 패턴 / 연애 활발한 시기(세운·대운). 깊게.}}
+
+<!-- ===================== 7단계 ===================== -->
+<h2 class="section"><span class="num">7.</span> 결혼운(結婚運) 분석</h2>
+{{배우자궁(일지) / 배우자상 / 결혼 적기(대운·세운) / 조혼·만혼 / 결혼생활 리스크와 해법. 깊게.}}
+
+<!-- ===================== 8단계 ===================== -->
+<h2 class="section"><span class="num">8.</span> 건강운(健康運) 분석</h2>
+{{오행 과다·결핍 → 취약 장부/질환 경향 / 조심할 시기. 단정적이되 의료 자문 권고 1줄.}}
+
+<!-- ===================== 9단계 ===================== -->
+<h2 class="section"><span class="num">9.</span> 인간관계·가족운 분석</h2>
+{{부모·형제·자녀·동료·동업 / 군겁쟁재 등 대인 리스크 / 귀인.}}
+
+<!-- ===================== 10단계 ===================== -->
+<h2 class="section"><span class="num">10.</span> 대운(大運) 상세</h2>
+{{현재~다음 2~3개 대운을 각각 <h3>간지대운 (나이대) <span class="conf …">…</span></h3> 로 정밀. 천간·지지·합충·용신과의 관계.}}
+
+<!-- ===================== 11단계 ===================== -->
+<h2 class="section"><span class="num">11.</span> 세운(歲運) 핵심</h2>
+{{최근·향후 몇 년(세운)의 간지·십성·길흉. compute_saju saeunFrom/saeunTo 활용. 표 또는 연도별 단락.}}
+
+<!-- ===================== 12단계 ===================== -->
+<h2 class="section"><span class="num">12.</span> 현실 조언 + 총평</h2>
+{{돈·직업·연애·결혼·건강 영역별 구체 행동지침(체크리스트). 냉정하고 단정적.}}
+<div class="final-card">
+  <div class="quote">{{이 사람 인생을 한 문장으로 — 명리적 핵심}}</div>
+  <p>{{총평 — 따뜻하지만 현실적인 마무리.}}</p>
+</div>
+
+<footer>
+  {{이름}}({{한자}}) · {{생년월일시}} · saju-engine v{{버전}}<br>
+  본 보고서는 명리학적 해석이며 의료·법률·재무의 전문 자문을 대체하지 않습니다.<br>
+  원국 산출: saju-engine (결정론 만세력) · 통변: 30년 역술가 페르소나
+</footer>
+
+</div>
+</body>
+</html>
